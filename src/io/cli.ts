@@ -26,7 +26,7 @@ async function parse(): Promise<Options> {
 
 function cleanup(options: Options): void {
   if (options.target instanceof URL) {
-    execSync(`rm -rf ${options.directory}`, { stdio: "ignore" });
+    execSync(`rimraf ${options.directory}`, { stdio: "ignore" });
   }
 }
 
