@@ -16,10 +16,11 @@ export default {
 };
 
 async function compute(options: Options): Promise<Map<Path, number>> {
-  assertGitIsInstalled();
+  const isWindows = process.platform === "win32";
+
+  assertGitIsInstalled(isWindows);
   assertIsGitRootDirectory(options.directory);
 
-  const isWindows = process.platform === "win32";
   const gitLogCommand = buildGitLogCommand(options, isWindows);
 
   internal.debug(`command to measure churns: ${gitLogCommand}`);
@@ -63,9 +64,13 @@ async function compute(options: Options): Promise<Map<Path, number>> {
   return filteredChurns;
 }
 
-function assertGitIsInstalled(): void {
+function assertGitIsInstalled(isWindows: boolean): void {
   try {
-    execSync("which git");
+    if (isWindows) {
+      execSync("where.exe git");
+    } else {
+      execSync("which git");
+    }
   } catch (error) {
     throw new Error("Program 'git' must be installed");
   }
