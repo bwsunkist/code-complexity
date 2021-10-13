@@ -40,13 +40,14 @@ function toJson(statistics: Statistics[]): string {
 
 function toTable(statistics: Statistics[]): string {
   const table = new Table({
-    head: ["file", "complexity", "churn", "score"],
+    head: ["file", "complexity", "churn", "frequency", "score"],
   });
   statistics.forEach((statistics) => {
     table.push([
       statistics.path,
       statistics.complexity,
       statistics.churn,
+      statistics.frequency,
       statistics.score,
     ]);
   });
@@ -55,7 +56,7 @@ function toTable(statistics: Statistics[]): string {
 }
 
 function toCSV(statistics: Statistics[]): string {
-  let csv = "file,complexity,churn,score\n";
+  let csv = "file,complexity,churn,frequency,score\n";
   statistics.forEach((stat) => {
     csv +=
       [stat.path, stat.complexity, stat.churn, stat.score].join(",") + "\n";

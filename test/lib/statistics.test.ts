@@ -4,6 +4,8 @@ import { join } from "path";
 import Statistics from "../../src/lib";
 import { Options } from "../../src/lib/types";
 
+const timeoutMiliSec = 90000;
+
 describe("Statistics", () => {
   const defaultOptions: Options = {
     directory: join(__dirname, "..", "code-complexity-fixture"),
@@ -26,7 +28,7 @@ describe("Statistics", () => {
 
       // Then
       expect(statistics).to.have.length(3);
-    });
+    }).timeout(timeoutMiliSec);
   });
 
   context("options.filter", () => {
@@ -39,7 +41,7 @@ describe("Statistics", () => {
       const statistics = Array.from(result.values());
 
       // Then
-      expect(statistics).to.deep.equal([
+      const expectResult = [
         {
           churn: 340,
           complexity: 516,
@@ -58,8 +60,16 @@ describe("Statistics", () => {
           path: "lib/application.js",
           score: 42771,
         },
-      ]);
-    });
+      ];
+      statistics.forEach((statistic, index) => {
+        expect(statistic.churn).to.equal(expectResult[index].churn);
+        expect(statistic.complexity).to.equal(expectResult[index].complexity);
+        expect(statistic.path).to.equal(expectResult[index].path);
+        expect(statistic.score).to.equal(expectResult[index].score);
+        expect(statistic.frequency).not.to.equal(null);
+        expect(statistic.frequency).not.to.equal(0);
+      });
+    }).timeout(timeoutMiliSec);
   });
 
   context("options.since", () => {
@@ -76,23 +86,26 @@ describe("Statistics", () => {
         {
           churn: 1,
           complexity: 516,
+          frequency: 0,
           path: "lib/response.js",
           score: 516,
         },
         {
           churn: 1,
           complexity: 51,
+          frequency: 0,
           path: ".travis.yml",
           score: 51,
         },
         {
           churn: 1,
           complexity: 48,
+          frequency: 0,
           path: "appveyor.yml",
           score: 48,
         },
       ]);
-    });
+    }).timeout(timeoutMiliSec);
   });
 
   context("options.sort=complexity", () => {
@@ -105,7 +118,7 @@ describe("Statistics", () => {
       const statistics = Array.from(result.values());
 
       // Then
-      expect(statistics).to.deep.equal([
+      const expectResult = [
         {
           churn: 340,
           complexity: 516,
@@ -124,8 +137,16 @@ describe("Statistics", () => {
           path: "lib/router/index.js",
           score: 53340,
         },
-      ]);
-    });
+      ];
+      statistics.forEach((statistic, index) => {
+        expect(statistic.churn).to.equal(expectResult[index].churn);
+        expect(statistic.complexity).to.equal(expectResult[index].complexity);
+        expect(statistic.path).to.equal(expectResult[index].path);
+        expect(statistic.score).to.equal(expectResult[index].score);
+        expect(statistic.frequency).not.to.equal(null);
+        expect(statistic.frequency).not.to.equal(0);
+      });
+    }).timeout(timeoutMiliSec);
   });
 
   context("options.sort=churn", () => {
@@ -138,7 +159,7 @@ describe("Statistics", () => {
       const statistics = Array.from(result.values());
 
       // Then
-      expect(statistics).to.deep.equal([
+      const expectResult = [
         {
           churn: 340,
           complexity: 516,
@@ -157,8 +178,16 @@ describe("Statistics", () => {
           path: "lib/router/index.js",
           score: 53340,
         },
-      ]);
-    });
+      ];
+      statistics.forEach((statistic, index) => {
+        expect(statistic.churn).to.equal(expectResult[index].churn);
+        expect(statistic.complexity).to.equal(expectResult[index].complexity);
+        expect(statistic.path).to.equal(expectResult[index].path);
+        expect(statistic.score).to.equal(expectResult[index].score);
+        expect(statistic.frequency).not.to.equal(null);
+        expect(statistic.frequency).not.to.equal(0);
+      });
+    }).timeout(timeoutMiliSec);
   });
 
   context("options.sort=file", () => {
@@ -171,7 +200,7 @@ describe("Statistics", () => {
       const statistics = Array.from(result.values());
 
       // Then
-      expect(statistics).to.deep.equal([
+      const expectResult = [
         {
           churn: 340,
           complexity: 516,
@@ -190,8 +219,16 @@ describe("Statistics", () => {
           path: "lib/router/index.js",
           score: 53340,
         },
-      ]);
-    });
+      ];
+      statistics.forEach((statistic, index) => {
+        expect(statistic.churn).to.equal(expectResult[index].churn);
+        expect(statistic.complexity).to.equal(expectResult[index].complexity);
+        expect(statistic.path).to.equal(expectResult[index].path);
+        expect(statistic.score).to.equal(expectResult[index].score);
+        expect(statistic.frequency).not.to.equal(null);
+        expect(statistic.frequency).not.to.equal(0);
+      });
+    }).timeout(timeoutMiliSec);
   });
 
   context("options.sort=score", () => {
@@ -204,7 +241,7 @@ describe("Statistics", () => {
       const statistics = Array.from(result.values());
 
       // Then
-      expect(statistics).to.deep.equal([
+      const expectResult = [
         {
           churn: 340,
           complexity: 516,
@@ -223,7 +260,15 @@ describe("Statistics", () => {
           path: "lib/router/index.js",
           score: 53340,
         },
-      ]);
-    });
+      ];
+      statistics.forEach((statistic, index) => {
+        expect(statistic.churn).to.equal(expectResult[index].churn);
+        expect(statistic.complexity).to.equal(expectResult[index].complexity);
+        expect(statistic.path).to.equal(expectResult[index].path);
+        expect(statistic.score).to.equal(expectResult[index].score);
+        expect(statistic.frequency).not.to.equal(null);
+        expect(statistic.frequency).not.to.equal(0);
+      });
+    }).timeout(timeoutMiliSec);
   });
 });

@@ -1,10 +1,12 @@
 import Churn from "./churn";
 import Complexity from "./complexity";
+import Updatefrequency from "./updatefrequency";
 import { Options, Path, Sort } from "./types";
 import { buildDebugger } from "../utils";
 
 const DEFAULT_CHURN = 1;
 const DEFAULT_COMPLEXITY = 1;
+const DEFAULT_FREQUENCY = 0;
 
 const internal = { debug: buildDebugger("statistics") };
 
@@ -12,12 +14,19 @@ export default class Statistics {
   public readonly path: Path;
   public readonly churn: number;
   public readonly complexity: number;
+  public readonly frequency: number;
   public readonly score: number;
 
-  constructor(path: Path, churn: number, complexity: number) {
+  constructor(
+    path: Path,
+    churn: number,
+    complexity: number,
+    frequency: number
+  ) {
     this.path = path;
     this.churn = churn;
     this.complexity = complexity;
+    this.frequency = frequency;
     this.score = this.churn * this.complexity;
   }
 
@@ -30,9 +39,10 @@ export default class Statistics {
     const churns = await Churn.compute(options);
     const paths = Array.from(churns.keys());
     const complexities = await Complexity.compute(paths, options);
+    const updateFrequency = await Updatefrequency.compute(paths, options);
 
     const statistics = paths
-      .map(toStatistics(churns, complexities))
+      .map(toStatistics(churns, complexities, updateFrequency))
       .sort(sort(options.sort))
       .filter(limit(options.limit));
 
@@ -42,12 +52,14 @@ export default class Statistics {
 
 function toStatistics(
   churns: Map<Path, number>,
-  complexities: Map<Path, number>
+  complexities: Map<Path, number>,
+  updateFrequencies: Map<Path, number>
 ): (path: Path) => Statistics {
   return (path): Statistics => {
     const churn = churns.get(path) || DEFAULT_CHURN;
     const complexity = complexities.get(path) || DEFAULT_COMPLEXITY;
-    return new Statistics(path, churn, complexity);
+    const updateFrequency = updateFrequencies.get(path) || DEFAULT_FREQUENCY;
+    return new Statistics(path, churn, complexity, updateFrequency);
   };
 }
 
