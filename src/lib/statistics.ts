@@ -1,12 +1,14 @@
 import Churn from "./churn";
 import Complexity from "./complexity";
 import Updatefrequency from "./updatefrequency";
+import Coverage from "./coverage";
 import { Options, Path, Sort } from "./types";
 import { buildDebugger } from "../utils";
 
 const DEFAULT_CHURN = 1;
 const DEFAULT_COMPLEXITY = 1;
 const DEFAULT_FREQUENCY = 0;
+const DEFAULT_COVERAGE = 0;
 
 const internal = { debug: buildDebugger("statistics") };
 
@@ -15,18 +17,21 @@ export default class Statistics {
   public readonly churn: number;
   public readonly complexity: number;
   public readonly frequency: number;
+  public readonly coverage: number;
   public readonly score: number;
 
   constructor(
     path: Path,
     churn: number,
     complexity: number,
-    frequency: number
+    frequency: number,
+    coverage: number
   ) {
     this.path = path;
     this.churn = churn;
-    this.complexity = complexity;
     this.frequency = frequency;
+    this.complexity = complexity;
+    this.coverage = coverage;
     this.score = this.churn * this.complexity;
   }
 
@@ -40,9 +45,10 @@ export default class Statistics {
     const paths = Array.from(churns.keys());
     const complexities = await Complexity.compute(paths, options);
     const updateFrequency = await Updatefrequency.compute(paths, options);
+    const coverage = await Coverage.compute(paths, options);
 
     const statistics = paths
-      .map(toStatistics(churns, complexities, updateFrequency))
+      .map(toStatistics(churns, complexities, updateFrequency, coverage))
       .sort(sort(options.sort))
       .filter(limit(options.limit));
 
@@ -53,13 +59,15 @@ export default class Statistics {
 function toStatistics(
   churns: Map<Path, number>,
   complexities: Map<Path, number>,
-  updateFrequencies: Map<Path, number>
+  updateFrequencies: Map<Path, number>,
+  coverages: Map<Path, number>
 ): (path: Path) => Statistics {
   return (path): Statistics => {
     const churn = churns.get(path) || DEFAULT_CHURN;
     const complexity = complexities.get(path) || DEFAULT_COMPLEXITY;
     const updateFrequency = updateFrequencies.get(path) || DEFAULT_FREQUENCY;
-    return new Statistics(path, churn, complexity, updateFrequency);
+    const coverage = coverages.get(path) || DEFAULT_COVERAGE;
+    return new Statistics(path, churn, complexity, updateFrequency, coverage);
   };
 }
 
